@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 
@@ -37,7 +38,7 @@ class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
         mDrawPaint!!.strokeJoin=Paint.Join.ROUND
         mDrawPaint!!.strokeCap=Paint.Cap.ROUND
         mCanvasPaint=Paint(Paint.DITHER_FLAG)
-        mBrushSize=20.toFloat()
+        //mBrushSize=20.toFloat() -> we will be setting this up in the main activity
     }
 
     //once our view is displayed this is called
@@ -94,8 +95,16 @@ class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
             //default value
             else ->return false
         }
+
         invalidate()
         return true
+    }
+
+    //change the brush size
+    fun setSizeForBrush(newSize: Float){
+        //we dont directly assign the brush size to the size variable so that uniformity can be maintained across all devices
+        mBrushSize=TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,newSize,resources.displayMetrics)
+        mDrawPaint!!.strokeWidth=mBrushSize
     }
 
     internal inner class CustomPath(var color:Int,
