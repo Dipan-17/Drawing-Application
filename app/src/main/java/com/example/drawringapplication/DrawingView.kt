@@ -12,18 +12,23 @@ import android.view.View
 
 
 class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
-    private var mDrawPath:CustomPath?=null
+    //declaring all the required variables
+    private var mDrawPath:CustomPath?=null //one custom path
     private var mCanvasBitmap: Bitmap?=null
     private var mDrawPaint: Paint?=null
     private var mCanvasPaint: Paint?=null
     private var mBrushSize:Float=0.toFloat()
     private var color=Color.BLACK
     private var canvas:Canvas?=null
+    //to make the line persist
+    private val mPaths=ArrayList<CustomPath>()
 
     //initialise variables
     init{
         setupDrawing()
     }
+
+    //function to ste up the drawing canvas the brush for the first time
     private fun setupDrawing(){
         mDrawPaint=Paint()
         mDrawPaint!!.color=color
@@ -35,7 +40,7 @@ class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
         mBrushSize=20.toFloat()
     }
 
-    //once our viewe is displayed this is called
+    //once our view is displayed this is called
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mCanvasBitmap=Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888)
@@ -46,7 +51,14 @@ class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
         super.onDraw(canvas)
         canvas?.drawBitmap(mCanvasBitmap!!,0f,0f,mCanvasPaint)
 
-        if(!mDrawPath!!.isEmpty){
+        //draw all the paths saved
+        for(path in mPaths){
+            mDrawPaint!!.strokeWidth= path.brushThickness
+            mDrawPaint!!.color= path.color
+            canvas?.drawPath(path,mDrawPaint!!)
+        }
+
+        if(!(mDrawPath!!.isEmpty)){
             mDrawPaint!!.strokeWidth=mDrawPath!!.brushThickness
             mDrawPaint!!.color=mDrawPath!!.color
             canvas?.drawPath(mDrawPath!!,mDrawPaint!!)
@@ -64,19 +76,21 @@ class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
                 mDrawPath!!.brushThickness=mBrushSize
                 mDrawPath!!.reset()
                 if (touchX != null && touchY!=null) {
-                    mDrawPath!!.moveTo(touchX,touchY)
+                    mDrawPath!!.moveTo(touchX,touchY) //move the pointer to the point of finger on the screen
                 }
             }
             //what should happen when we drag over the screen
             MotionEvent.ACTION_MOVE->{
                 if (touchX != null && touchY!=null) {
-                    mDrawPath!!.lineTo(touchX,touchY)
+                    mDrawPath!!.lineTo(touchX,touchY) //moving the finger draws the line too
                 }
             }
             //when we release the touch
             MotionEvent.ACTION_UP->{
-                mDrawPath=CustomPath(color,mBrushSize)
+                mPaths.add(mDrawPath!!) //before releasing save the current path
+                mDrawPath=CustomPath(color,mBrushSize) //finger up resets it
             }
+
             //default value
             else ->return false
         }
