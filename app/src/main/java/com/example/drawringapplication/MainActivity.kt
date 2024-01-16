@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity() {
             imageButton.setImageDrawable(
                 ContextCompat.getDrawable(this, R.drawable.pallet_pressed)
             )
-
             //update the button
             mImageButtonCurrentPaint=view
         }
