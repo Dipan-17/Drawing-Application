@@ -16,6 +16,7 @@ import androidx.core.view.get
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.Image
 import android.provider.MediaStore
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
@@ -95,6 +96,15 @@ class MainActivity : AppCompatActivity() {
         ibGallery.setOnClickListener {
             requestStoragePermission()
         }
+
+        //undo button
+        val ibUndo:ImageButton=findViewById(R.id.ib_undo)
+        ibUndo.setOnClickListener {
+            drawingView?.onClickUndo()
+        }
+
+        //redo button
+
     }
 
 

@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 
 
 class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
@@ -23,10 +24,32 @@ class DrawingView(context:Context,attrs:AttributeSet): View(context,attrs) {
     private var canvas:Canvas?=null
     //to make the line persist
     private val mPaths=ArrayList<CustomPath>()
+    //for undo
+    private val mUndoPaths = ArrayList<CustomPath>()
 
     //initialise variables
     init{
         setupDrawing()
+    }
+
+    //for undo
+    fun onClickUndo(){
+        if(mPaths.size>0){
+            mUndoPaths.add(mPaths.removeAt(mPaths.size-1))
+            //internally calls onDraw
+            invalidate()
+        }else{
+            Toast.makeText(context,"Nothing to undo",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun onClickRedo(){
+        if(mUndoPaths.size>0){
+            mPaths.add(mUndoPaths.removeAt(mUndoPaths.size-1))
+            invalidate()
+        }else{
+            Toast.makeText(context,"Nothing to redo",Toast.LENGTH_SHORT).show()
+        }
     }
 
     //function to ste up the drawing canvas the brush for the first time
