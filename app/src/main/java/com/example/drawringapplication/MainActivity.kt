@@ -21,24 +21,34 @@ class MainActivity : AppCompatActivity() {
     private var drawingView:DrawingView?=null
     private var mImageButtonCurrentPaint:ImageButton?=null
 
-    val requestPermission:ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){
-            permissions->
-            permissions.entries.forEach{
-                val permissionName=it.key
-                val isGranted=it.value
-
-                if(isGranted){
-                    Toast.makeText(this@MainActivity, "Permission Granted",
-                        Toast.LENGTH_SHORT).show()
-                }else{
-                    if(permissionName==Manifest.permission.READ_EXTERNAL_STORAGE){
-                        Toast.makeText(this@MainActivity, "Storage Access Denied !!",
-                            Toast.LENGTH_SHORT).show()
-                    }
+    val requestPermission: ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                val perMissionName = it.key
+                val isGranted = it.value
+                //if permission is granted show a toast and perform operation
+                if (isGranted ) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Permission granted now you can read the storage files.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    //perform operation
+                } else {
+                    //Displaying another toast if permission is not granted and this time focus on
+                    //    Read external storage
+                    if (perMissionName == Manifest.permission.READ_EXTERNAL_STORAGE)
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Oops you just denied the permission.",
+                            Toast.LENGTH_LONG
+                        ).show()
                 }
             }
+
         }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -68,18 +78,31 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+    //Create a method to requestStorage permission
     private fun requestStoragePermission(){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,
+        // Check if the permission was denied and show rationale
+        if (
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
-            ){
-            showRationaleDialog("Drawing App",
-                                "App needs to access storage to set background photos")
-        }else{
-            requestPermission.launch(arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-                //TODO - Add writing storage permission
-            ))
+        ){
+            //call the rationale dialog to tell the user why they need to allow permission request
+            showRationaleDialog("Drawing App","Drawing App " +
+                    "needs to Access Your External Storage")
         }
+        else {
+            // You can directly ask for the permission.
+            //  if it has not been denied then request for permission
+            //  The registered ActivityResultCallback gets the result of this request.
+            requestPermission.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                   // Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
+        }
+
     }
 
 
@@ -110,6 +133,7 @@ class MainActivity : AppCompatActivity() {
         //show the dialog when this method is called
         brushDialog.show()
     }
+
 
     //method to set the color when clicked on the pallet
     fun paintClicked(view: View){
