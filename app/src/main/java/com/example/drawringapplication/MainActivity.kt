@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    val requestPermission: ActivityResultLauncher<Array<String>> =
+    private val requestPermission: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
                 permissions ->
 
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     //Displaying another toast if permission is not granted and this time focus on
                     //    Read external storage
-                    if (perMissionName == Manifest.permission.READ_EXTERNAL_STORAGE)
+                    if (perMissionName == Manifest.permission.READ_MEDIA_IMAGES)
                         Toast.makeText(
                             this@MainActivity,
                             "Oops you just denied the permission.",
@@ -86,8 +86,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         //brush button to select the brush size
-        val ib_brush: ImageButton =findViewById(R.id.ib_brush)
-        ib_brush.setOnClickListener {
+        val ibBrush: ImageButton =findViewById(R.id.ib_brush)
+        ibBrush.setOnClickListener {
             showBrushSizeChooserDialog()
         }
 
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         if (
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
+                Manifest.permission.READ_MEDIA_IMAGES)
         ){
             //call the rationale dialog to tell the user why they need to allow permission request
             showRationaleDialog("Drawing App","Drawing App " +
@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             //  The registered ActivityResultCallback gets the result of this request.
             requestPermission.launch(
                 arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_MEDIA_IMAGES,
                    // Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
