@@ -100,6 +100,8 @@
             android:src="@drawable/pallet_normal"
             android:tag="@color/blue"
             android:background="@color/blue"
+
+            android:onClick="paintClicked"
             />
         <ImageButton
             android:layout_width="25dp"
@@ -142,6 +144,7 @@
             android:tag="@color/white"
             android:onClick="paintClicked"
             />
+
     </LinearLayout>
 
     <LinearLayout
@@ -193,8 +196,18 @@
             android:layout_margin="5dp"
             android:src="@drawable/ic_redo"
             android:scaleType="fitXY"
-
             />
+
+        <ImageButton
+            android:id="@+id/ib_save"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_save"
+            android:scaleType="fitXY"
+            />
+
+
     </LinearLayout>
 
 
