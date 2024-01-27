@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private var drawingView:DrawingView?=null
     private var mImageButtonCurrentPaint:ImageButton?=null
+    var customProgressDialog:Dialog?=null
 
     private val openGalleryLauncher:ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
@@ -125,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         val ibSave:ImageButton=findViewById(R.id.ib_save)
         ibSave.setOnClickListener {
             if(isReadStorageAllowed()){//latest version allows write if read is allowed
+                showProgressDialog()
                 lifecycleScope.launch{
                     val flDrawingView:FrameLayout=findViewById(R.id.fl_drawing_view_container)
                     val myBitmap:Bitmap=getBitmapFromView(flDrawingView)
@@ -178,7 +180,14 @@ class MainActivity : AppCompatActivity() {
 
 
     //save image
-    //1.convert the view into a bitmap to store
+
+    //1.Permission check
+    private fun isReadStorageAllowed():Boolean{
+        val result=ContextCompat.checkSelfPermission(this,
+            Manifest.permission.READ_MEDIA_IMAGES)
+        return result==PackageManager.PERMISSION_GRANTED
+    }
+    //2.convert the view into a bitmap to store
     private fun getBitmapFromView(view:View):Bitmap{
         val returnedBitmap=Bitmap.createBitmap(view.width,view.height,Bitmap.Config.ARGB_8888)
         //bind the canvas
@@ -195,7 +204,7 @@ class MainActivity : AppCompatActivity() {
         view.draw(canvas)
         return returnedBitmap
     }
-    //2.create a coroutine function to work in background
+    //3.create a coroutine function to work in background
     private suspend fun saveBitmapFile(mBitmap: Bitmap?):String{
         var result="" //where is the image
 
@@ -216,6 +225,7 @@ class MainActivity : AppCompatActivity() {
                     result=f.absolutePath
 
                     runOnUiThread{
+                        cancelProgressDialog() //run on ui thread
                         if(result.isNotEmpty()){
                             Toast.makeText(this@MainActivity,
                                 "File saved at: $result", Toast.LENGTH_SHORT).show()
@@ -235,13 +245,6 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
-
-
-    private fun isReadStorageAllowed():Boolean{
-        val result=ContextCompat.checkSelfPermission(this,
-            Manifest.permission.READ_MEDIA_IMAGES)
-        return result==PackageManager.PERMISSION_GRANTED
-    }
 
 
     //Create a method to requestStorage permission
@@ -270,7 +273,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
+    //clicking on the brush icon opens up the size selector
     private fun showBrushSizeChooserDialog(){
         //set up the dialog
         var brushDialog= Dialog(this)
@@ -335,5 +338,19 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
+    //method to show a custom dialog whenever image is being uploaded in the background
+    private fun showProgressDialog(){
+        customProgressDialog=Dialog(this@MainActivity)
+        //set the content from a layout resource
+        customProgressDialog?.setContentView(R.layout.dialog_custom_progress)
+        //start the dialog
+        customProgressDialog?.show()
+    }
 
+    private fun cancelProgressDialog(){
+        if(customProgressDialog!=null){
+            customProgressDialog?.dismiss()
+            customProgressDialog=null
+        }
+    }
 }
