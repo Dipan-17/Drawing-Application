@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     private var drawingView:DrawingView?=null
     private var mImageButtonCurrentPaint:ImageButton?=null
-    val openGalleryLauncher:ActivityResultLauncher<Intent> =
+
+    private val openGalleryLauncher:ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             result ->
             if(result.resultCode== RESULT_OK && result.data!=null){
@@ -104,7 +105,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         //redo button
-
+        val ibRedo:ImageButton=findViewById(R.id.ib_redo)
+        ibRedo.setOnClickListener {
+            drawingView?.onClickRedo()
+        }
     }
 
 
